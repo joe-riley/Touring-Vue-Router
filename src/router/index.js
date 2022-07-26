@@ -14,7 +14,7 @@ const routes = [
     props: route => ({ page: parseInt(route.query.page) || 1 })
   },
   {
-    path: '/event/:id',
+    path: '/events/:id',
     name: 'EventLayout',
     props: true,
     component: EventLayout,
@@ -37,10 +37,36 @@ const routes = [
     ]
   },
   {
-    path: '/about',
+    path: '/event/:id',
+    redirect: to => {
+      // Technically param is not needed here because id will be automatically passed because of parent route
+      return { name: 'EventDetails', params: { id: to.params.id } }
+    },
+    children: [
+      {
+        path: 'register',
+        redirect: () => ({
+          name: 'EventRegister'
+        })
+      },
+      {
+        path: 'edit',
+        redirect: () => ({
+          name: 'EventEdit'
+        })
+      }
+    ]
+  },
+  {
+    path: '/about-us',
     name: 'About',
-    component: About
+    component: About,
+    alias: '/about'
   }
+  // {
+  //   path: '/about',
+  //   redirect: { name: 'About' }
+  // }
 ]
 
 const router = createRouter({
