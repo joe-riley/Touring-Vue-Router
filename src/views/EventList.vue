@@ -2,7 +2,6 @@
   <h1>Events for Good</h1>
   <div class="events">
     <EventCard v-for="event in events" :key="event.id" :event="event" />
-
     <div class="pagination">
       <router-link
         id="page-prev"
@@ -12,6 +11,19 @@
         >&#60; Previous</router-link
       >
 
+      <ul id="pages">
+        <li
+          class="page"
+          v-for="(page, index) in totalPages"
+          :key="index"
+          :page="page"
+        >
+          <router-link
+            :to="{ name: 'EventList', query: { page: index + 1 } }"
+            >{{ index + 1 }}</router-link
+          >
+        </li>
+      </ul>
       <router-link
         id="page-next"
         :to="{ name: 'EventList', query: { page: page + 1 } }"
@@ -37,7 +49,8 @@ export default {
   data() {
     return {
       events: null,
-      totalEvents: 0
+      totalEvents: 0,
+      totalPages: 0
     }
   },
   created() {
@@ -47,6 +60,7 @@ export default {
         .then(response => {
           this.events = response.data
           this.totalEvents = response.headers['x-total-count']
+          this.totalPages = Math.ceil(this.totalEvents / 2)
         })
         .catch(error => {
           console.log(error)
@@ -55,9 +69,7 @@ export default {
   },
   computed: {
     hasNextPage() {
-      var totalPages = Math.ceil(this.totalEvents / 2)
-
-      return this.page < totalPages
+      return this.page < Math.ceil(this.totalEvents / 2)
     }
   }
 }
@@ -69,11 +81,14 @@ export default {
   flex-direction: column;
   align-items: center;
 }
+
 .pagination {
   display: flex;
   width: 290px;
 }
-.pagination a {
+
+.pagination a,
+.pagination ul {
   flex: 1;
   text-decoration: none;
   color: #2c3e50;
@@ -85,5 +100,15 @@ export default {
 
 #page-next {
   text-align: right;
+}
+
+#pages {
+  text-align: center;
+  margin-top: 0;
+}
+
+#pages .page {
+  display: inline-block;
+  padding-left: 8px;
 }
 </style>
